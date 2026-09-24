@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía & Simulación de Polarimetría | Alimentos y Ciencias Naturales</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg-main: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-cyan: #38bdf8;
+      --accent-emerald: #34d399;
+      --accent-purple: #c084fc;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+      --glass-bg: rgba(30, 41, 59, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 50px;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      border-bottom: 1px solid var(--border-color);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .badge-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .badge.green {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--accent-emerald);
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+
+    .badge.purple {
+      background: rgba(192, 132, 252, 0.15);
+      color: var(--accent-purple);
+      border-color: rgba(192, 132, 252, 0.3);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    nav.tab-nav {
+      display: flex;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.5rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.75rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn.active {
+      color: var(--bg-main);
+      background: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards & Layout */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.75rem;
+    }
+
+    .card-title.emerald { color: var(--accent-emerald); }
+    .card-title.purple { color: var(--accent-purple); }
+    .card-title.amber { color: var(--accent-amber); }
+
+    /* Molecule Image Cards */
+    .mol-img-container {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      margin-bottom: 1rem;
+      background: #090d16;
+    }
+
+    .mol-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .mol-img:hover {
+      transform: scale(1.02);
+    }
+
+    /* Simulation UI */
+    .sim-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      background: rgba(15, 23, 42, 0.5);
+      padding: 1.25rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    input, select {
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    .optical-bench {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
+    }
+
+    canvas#benchCanvas {
+      width: 100%;
+      height: 240px;
+      background: #050811;
+      border-radius: 8px;
+    }
+
+    /* Polarimeter Viewfinder / Laurent Half-shade */
+    .field-of-view-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      background: rgba(15, 23, 42, 0.7);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .viewfinder {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 6px solid #334155;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 0, 0, 0.9);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .half-left, .half-right {
+      width: 50%;
+      height: 100%;
+      transition: background-color 0.05s ease;
+    }
+
+    .half-left { border-right: 1px solid rgba(0, 0, 0, 0.3); }
+
+    .crosshair-v {
+      position: absolute;
+      top: 0; left: 50%; width: 1px; height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .crosshair-h {
+      position: absolute;
+      top: 50%; left: 0; width: 100%; height: 1px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .dial-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dial-slider {
+      width: 80%;
+      accent-color: var(--accent-cyan);
+    }
+
+    .display-box {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-family: 'Fira Code', monospace;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+
+    /* Data Tables */
+    .table-responsive {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      margin-top: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+
+    th {
+      background: #0f172a;
+      color: var(--accent-cyan);
+      padding: 0.85rem 1rem;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .btn {
+      background: var(--accent-cyan);
+      color: #0f172a;
+      font-weight: 700;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+      box-shadow: none;
+    }
+
+    .btn-success {
+      background: var(--accent-emerald);
+      color: #0f172a;
+    }
+
+    /* Math Formula Box */
+    .formula-box {
+      background: rgba(15, 23, 42, 0.6);
+      border-left: 4px solid var(--accent-purple);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1rem 0;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .formula-title {
+      font-size: 0.85rem;
+      color: var(--accent-purple);
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+    }
+
+    .quiz-option {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quiz-option:hover {
+      border-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .quiz-option.correct {
+      background: rgba(52, 211, 153, 0.15) !important;
+      border-color: var(--accent-emerald) !important;
+      color: var(--accent-emerald);
+    }
+
+    .quiz-option.incorrect {
+      background: rgba(251, 113, 133, 0.15) !important;
+      border-color: var(--accent-rose) !important;
+      color: var(--accent-rose);
+    }
+
+    .chart-container {
+      position: relative;
+      height: 320px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge-container">
+      <span class="badge">Laboratorio de Análisis Instrumental</span>
+      <span class="badge green">Ingeniería de Alimentos</span>
+      <span class="badge purple">Ciencias Naturales y del Ambiente</span>
+    </div>
+    <h1>Guía Interactiva & Simulación: Polarimetría</h1>
+    <p class="subtitle">Análisis Cuantitativo, Caracterización de Chiralidad, Determinación de Azúcares y Cinética Química de Inversión</p>
+  </header>
+
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('simulador')">
+      ⚡ Simulador de Polarímetro
+    </button>
+    <button class="tab-btn" onclick="switchTab('quiralidad')">
+      🧪 Quiralidad 3D & Estereoquímica
+    </button>
+    <button class="tab-btn" onclick="switchTab('fundamentos')">
+      📚 Fundamentos Teóricos
+    </button>
+    <button class="tab-btn" onclick="switchTab('datos')">
+      📊 Datos Crudos Experimentales
+    </button>
+    <button class="tab-btn" onclick="switchTab('graficos')">
+      📈 Análisis Gráfico & Cinético
+    </button>
+    <button class="tab-btn" onclick="switchTab('calculadora')">
+      🧮 Calculadora de Laboratorio
+    </button>
+    <button class="tab-btn" onclick="switchTab('evaluacion')">
+      ✏️ Caso Práctico & Cuestionario
+    </button>
+  </nav>
+
+  <div class="container">
+
+    <!-- ==================== TAB 1: SIMULADOR ==================== -->
+    <div id="simulador" class="tab-content active">
+      <div class="grid-2">
+        <!-- Panel de Control y Banco Óptico -->
+        <div class="card">
+          <div class="card-title">
+            <span>🔬 Banco Óptico & Configuración de Muestra</span>
+          </div>
+
+          <div class="sim-controls">
+            <div class="form-group">
+              <label for="sampleSelect">Muestra / Analito:</label>
+              <select id="sampleSelect" onchange="updateSimulation()">
+                <optgroup label="Ingeniería de Alimentos">
+                  <option value="sucrose" selected>Sacarosa (Azúcar Comercial) [[α]²⁰ = +66.53°]</option>
+                  <option value="glucose">D-Glucosa (Dextrosa) [[α]²⁰ = +52.70°]</option>
+                  <option value="fructose">D-Fructosa (Levulosa) [[α]²⁰ = -92.40°]</option>
+                  <option value="lactose">Lactosa Monohidratada [[α]²⁰ = +52.60°]</option>
+                  <option value="invert_sugar">Azúcar Invertido (1:1 Gluc:Fruc) [[α]²⁰ = -19.85°]</option>
+                </optgroup>
+                <optgroup label="Ciencias Naturales y Ambiente">
+                  <option value="limonene_pure">D-Limoneno Puro (Naranja) [[α]²⁰ = +123.60°]</option>
+                  <option value="menthol">L-Mentol (Menta) [[α]²⁰ = -50.00°]</option>
+                  <option value="glutamic_acid">Ácido L-Glutámico (en HCl 6M) [[α]²⁰ = +31.40°]</option>
+                  <option value="camphor">D-Alcanfor (en Etanol) [[α]²⁰ = +44.20°]</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="concInput">Concentración c (g / 100 mL):</label>
+              <input type="number" id="concInput" value="10.0" min="0" max="50" step="0.5" oninput="updateSimulation()">
+            </div>
+
+            <div class="form-group">
+              <label for="lengthSelect">Longitud de Celda l (dm):</label>
+              <select id="lengthSelect" onchange="updateSimulation()">
+                <option value="1.0">1.0 dm (100 mm)</option>
+                <option value="2.0" selected>2.0 dm (200 mm)</option>
+                <option value="0.5">0.5 dm (50 mm)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="tempInput">Temperatura T (°C):</label>
+              <input type="number" id="tempInput" value="20.0" min="10" max="60" step="1" oninput="updateSimulation()">
+            </div>
+          </div>
+
+          <!-- Canvas Representativo de Onda y Polarización -->
+          <div class="optical-bench">
+            <label style="display:block; margin-bottom:0.5rem; font-size:0.8rem; color:var(--accent-cyan)">
+              Trayectoria de la Luz Polarizada Plana y Rotación del Vector
+            </label>
+            <canvas id="benchCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Campo de Visión Laurent Half-Shade & Analizador -->
+        <div class="card">
+          <div class="card-title emerald">
+            <span>👁️ Campo de Visión del Polarímetro (Penumbra de Laurent)</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
+            Ajusta el dial del analizador hasta lograr la <strong>igualdad exacta de brillo</strong> entre las dos mitades del campo de visión (coincidencia de penumbra).
+          </p>
+
+          <div class="field-of-view-container">
+            <div class="viewfinder">
+              <div class="half-left" id="halfLeft"></div>
+              <div class="half-right" id="halfRight"></div>
+              <div class="crosshair-v"></div>
+              <div class="crosshair-h"></div>
+            </div>
+
+            <div class="dial-container">
+              <label for="analyzerDial">Ángulo del Analizador θ (°): <span id="dialVal" style="color:var(--accent-cyan); font-weight:700">0.00°</span></label>
+              <input type="range" id="analyzerDial" class="dial-slider" min="-180" max="180" step="0.05" value="0" oninput="onDialChange()">
+              <div style="display:flex; gap:10px; margin-top:5px;">
+                <button class="btn btn-secondary" onclick="stepDial(-1.0)">-1.0°</button>
+                <button class="btn btn-secondary" onclick="stepDial(-0.05)">-0.05°</button>
+                <button class="btn btn-secondary" onclick="autoAlignDial()">🎯 Auto-Alinear</button>
+                <button class="btn btn-secondary" onclick="stepDial(0.05)">+0.05°</button>
+                <button class="btn btn-secondary" onclick="stepDial(1.0)">+1.0°</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="display-box">
+            <div class="stat-item">
+              <div class="stat-label">Rotación Teórica (α)</div>
+              <div class="stat-value" id="alphaTeoricoDisplay">+13.31°</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Rotación Específica [α]ᵀ</div>
+              <div class="stat-value" style="color:var(--accent-purple)" id="specRotDisplay">+66.53°</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Estado de Alineación</div>
+              <div class="stat-value" style="font-size:1.1rem;" id="alignmentStatus">Desalineado</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: QUIRALIDAD 3D ==================== -->
+    <div id="quiralidad" class="tab-content">
+      <div class="card">
+        <div class="card-title">
+          <span>🔬 Estereoquímica y Visualizaciones 3D de las Moléculas en Estudio</span>
+        </div>
+        <p style="margin-bottom:1.5rem; color:var(--text-muted)">
+          Explora las estructuras moleculares en 3D, identificando los carbonos asimétricos (estereocentros C*) y el impacto de los enantiómeros en sus propiedades fisicoquímicas y sensoriales.
+        </p>
+
+        <div class="grid-2">
+          <!-- Tarjeta Sacarosa -->
+          <div class="card" style="margin-bottom:0;">
+            <div class="card-title emerald">
+              <span>🍬 Sacarosa (C₁₂H₂₂O₁₁) — 9 Centros Quirales</span>
+            </div>
+            <div class="mol-img-container">
+              <img src="sucrose_chirality_3d.jpg" alt="Render 3D Sacarosa y centros quirales" class="mol-img">
+            </div>
+            <ul style="font-size:0.85rem; color:var(--text-muted); padding-left:1.2rem; line-height:1.6;">
+              <li><strong>Anillo de Glucosa:</strong> 5 carbonos asimétricos (C1, C2, C3, C4, C5).</li>
+              <li><strong>Anillo de Fructosa:</strong> 4 carbonos asimétricos (C2, C3, C4, C5).</li>
+              <li><strong>Rotación Específica [α]²⁰_D:</strong> <span style="color:var(--accent-emerald); font-weight:700">+66.53° (Dextrorrotatoria)</span></li>
+              <li><strong>Importancia:</strong> Azúcar común no reductor analizado en la industria azucarera y jugos mediante el polarímetro.</li>
+            </ul>
+          </div>
+
+          <!-- Tarjeta Limoneno -->
+          <div class="card" style="margin-bottom:0;">
+            <div class="card-title purple">
+              <span>🍋 Limoneno (C₁₀H₁₆) — Enantiómeros y Espejo Óptico</span>
+            </div>
+            <div class="mol-img-container">
+              <img src="limonene_enantiomers_3d.jpg" alt="Render 3D Enantiómeros de Limoneno" class="mol-img">
+            </div>
+            <ul style="font-size:0.85rem; color:var(--text-muted); padding-left:1.2rem; line-height:1.6;">
+              <li><strong>Centro Quiral:</strong> 1 carbono asimétrico en C4.</li>
+              <li><strong>(4R)-(+)-D-Limoneno:</strong> [α]²⁰_D = <span style="color:var(--accent-cyan)">+123.60°</span> (Olor a naranja dulce).</li>
+              <li><strong>(4S)-(-)-L-Limoneno:</strong> [α]²⁰_D = <span style="color:var(--accent-rose)">-123.60°</span> (Olor a pino / limon agrio).</li>
+              <li><strong>Aplicación:</strong> Detección de adulteración en aceites esenciales mediante polarimetría.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem;" class="card">
+          <div class="card-title amber">
+            <span>🌿 L-Mentol y Ácido L-Glutámico</span>
+          </div>
+          <div class="grid-2">
+            <div class="mol-img-container" style="margin-bottom:0;">
+              <img src="menthol_glutamic_3d.jpg" alt="Render 3D L-Mentol y Ácido Glutámico" class="mol-img">
+            </div>
+            <div style="padding:0.5rem;">
+              <h4 style="color:var(--accent-amber); margin-bottom:0.5rem;">Detalles Estereoquímicos</h4>
+              <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.8rem;">
+                <strong>1. L-Mentol (C₁₀H₂₀O):</strong> Monoterpeno con 3 carbonos quirales (1R, 2S, 5R). Su rotación es <strong>[α]²⁰_D = -50.00°</strong>. Es el único enantiómero que activa selectivamente los receptores de frío neuronal TRPM8.
+              </p>
+              <p style="font-size:0.9rem; color:var(--text-muted);">
+                <strong>2. Ácido L-Glutámico (C₅H₉NO₄):</strong> Aminoácido quiral con 1 centro α-asimétrico. Su rotación específica es <strong>[α]²⁰_D = +31.40°</strong> en HCl 6M. Es la biomolécula responsable del sabor Umami.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: FUNDAMENTOS ==================== -->
+    <div id="fundamentos" class="tab-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>📖 Fundamentos Fisicoquímicos</span>
+          </div>
+          <p style="margin-bottom:1rem;">
+            La <strong>Polarimetría</strong> es una técnica analítica no destructiva basada en la medición de la rotación del plano de la luz linealmente polarizada al atravesar una sustancia ópticamente activa (molécula quiral).
+          </p>
+
+          <div class="formula-box">
+            <div class="formula-title">Ley de Biot (Ecuación Fundamental)</div>
+            α = [α]<sub>λ</sub><sup>T</sup> · c · l
+            <br><br>
+            <span style="font-size:0.85rem; color:var(--text-muted);">
+              • <strong>α</strong>: Rotación óptica observada en grados (°) <br>
+              • <strong>[α]<sub>λ</sub><sup>T</sup></strong>: Rotación específica a la temp T y longitud de onda λ (°·mL / g·dm)<br>
+              • <strong>c</strong>: Concentración del analito en g/mL (o en g/100mL usando el factor 1/100)<br>
+              • <strong>l</strong>: Longitud de la celda de muestra en decímetros (dm).
+            </span>
+          </div>
+
+          <h4 style="color:var(--accent-cyan); margin: 1rem 0 0.5rem 0;">Corrección por Temperatura</h4>
+          <p style="font-size:0.9rem; color:var(--text-muted);">
+            La rotación específica disminuye ligeramente al aumentar la temperatura debido a la expansión térmica de la solución y cambios de conformación molecular:
+          </p>
+          <div class="formula-box">
+            [α]<sub>D</sub><sup>T</sup> = [α]<sub>D</sub><sup>20</sup> - k(T - 20)
+            <br>
+            <span style="font-size:0.8rem; color:var(--text-muted);">Para la sacarosa, k ≈ 0.000184 × [α]<sub>D</sub><sup>20</sup> = 0.0122 °/°C.</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title emerald">
+            <span>🌾 Aplicaciones en Ingeniería de Alimentos</span>
+          </div>
+          <ul style="padding-left:1.2rem; margin-bottom:1rem;">
+            <li style="margin-bottom:0.6rem;">
+              <strong>Control de Calidad de Azúcar de Caña y Remolacha:</strong> Grado de pureza sacarimétrica (°Z o °S) mediante escala azúcar Ventzke.
+            </li>
+            <li style="margin-bottom:0.6rem;">
+              <strong>Método de Clerget (Doble Polarización):</strong> Permite cuantificar la sacarosa en productos agroalimentarios complejos que contienen azúcares reductores libres (jugos, mieles, mermeladas).
+            </li>
+            <li style="margin-bottom:0.6rem;">
+              <strong>Determinación de Lactosa en Leche:</strong> Tras la precipitación selectiva de proteínas y lípidos usando reactivos de Carrez I (Ferrocianuro de Potasio) y Carrez II (Acetato de Zinc).
+            </li>
+            <li style="margin-bottom:0.6rem;">
+              <strong>Detección de Adulteración en Mieles:</strong> La miel pura es levorrotatoria (debido a la fructosa [α] = -92.4°). Si se adulteran con jarabe de maíz (rico en D-glucosa [+52.7°] y dextrinas), la muestra se vuelve dextrorrotatoria (+).
+            </li>
+          </ul>
+
+          <div class="formula-box">
+            <div class="formula-title">Fórmula de Clerget (Doble Polarización)</div>
+            % Sacarosa = 100 · (P - I) / (142.66 - 0.5 · T)
+            <br><br>
+            <span style="font-size:0.8rem; color:var(--text-muted);">
+              Donde <strong>P</strong> es la lectura polarimétrica directa y <strong>I</strong> es la lectura tras la inversión ácida a la temperatura <strong>T</strong> (°C).
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title purple">
+          <span>🌿 Aplicaciones en Ciencias Naturales y del Ambiente</span>
+        </div>
+        <div class="grid-2">
+          <div>
+            <h4 style="color:var(--accent-purple); margin-bottom:0.5rem;">1. Cinética de Inversión de la Sacarosa</h4>
+            <p style="font-size:0.9rem; color:var(--text-muted);">
+              La hidrólisis catalizada por ácido es una reacción de pseudo-primer orden. A medida que la sacarosa (+66.5°) se hidroliza en D-glucosa (+52.7°) y D-fructosa (-92.4°), el signo de la rotación cambia de positivo a negativo (inversión).
+            </p>
+            <div class="formula-box">
+              ln(α<sub>t</sub> - α<sub>∞</sub>) = ln(α<sub>0</sub> - α<sub>∞</sub>) - k · t
+            </div>
+          </div>
+          <div>
+            <h4 style="color:var(--accent-purple); margin-bottom:0.5rem;">2. Pureza Enantiomérica de Aceites Esenciales</h4>
+            <p style="font-size:0.9rem; color:var(--text-muted);">
+              Los aceites esenciales vegetales (como el D-Limoneno de cáscara de cítricos o el L-Mentol de menta) poseen firmas ópticas específicas. La racemización o la presencia de contaminantes enantioméricos altera su rotación específica.
+            </p>
+            <div class="formula-box">
+              ee% = ([α]<sub>medido</sub> / [α]<sub>puro</sub>) × 100
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: DATOS CRUDOS ==================== -->
+    <div id="datos" class="tab-content">
+      <div class="card">
+        <div class="card-title">
+          <span>📁 Conjuntos de Datos Crudos de Laboratorio</span>
+          <div style="margin-left:auto; display:flex; gap:8px;">
+            <button class="btn btn-secondary" onclick="exportActiveTableCSV(false)">📥 Descargar CSV (.csv)</button>
+            <button class="btn btn-success" onclick="exportActiveTableCSV(true)">📊 Descargar Excel ES (.csv)</button>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-bottom:1rem; flex-wrap:wrap;">
+          <button class="btn btn-secondary" onclick="showDataSet('calibracion')">Curva Calibración Sacarosa</button>
+          <button class="btn btn-secondary" onclick="showDataSet('alimentos')">Muestras de Alimentos</button>
+          <button class="btn btn-secondary" onclick="showDataSet('cinetica')">Cinética de Inversión</button>
+          <button class="btn btn-secondary" onclick="showDataSet('naturales')">Productos Naturales</button>
+        </div>
+
+        <div id="tableContainer" class="table-responsive">
+          <!-- Cargado dinámicamente -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 5: GRAFICOS ==================== -->
+    <div id="graficos" class="tab-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>📈 Curva de Calibración: Rotación vs Concentración</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="calibChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title purple">
+            <span>⏱️ Cinética de Inversión α(t) a Distintas Temperaturas</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="kineticChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title amber">
+          <span>🔥 Ajuste Lineal Cinético & Ecuación de Arrhenius</span>
+        </div>
+        <div class="grid-2">
+          <div class="chart-container">
+            <canvas id="lnKineticChart"></canvas>
+          </div>
+          <div style="padding:1rem;">
+            <h4 style="color:var(--accent-amber); margin-bottom:0.5rem;">Parámetros Cinéticos Calculados</h4>
+            <ul style="font-size:0.9rem; color:var(--text-muted); padding-left:1rem; line-height:1.8;">
+              <li><strong>Constante k (25°C):</strong> <span style="color:var(--text-main); font-weight:600">0.0058 min⁻¹</span> (t½ = 119.5 min)</li>
+              <li><strong>Constante k (35°C):</strong> <span style="color:var(--text-main); font-weight:600">0.0165 min⁻¹</span> (t½ = 42.0 min)</li>
+              <li><strong>Constante k (45°C):</strong> <span style="color:var(--text-main); font-weight:600">0.0430 min⁻¹</span> (t½ = 16.1 min)</li>
+              <li><strong>Energía de Activación (Ea):</strong> <span style="color:var(--accent-emerald); font-weight:700">77.4 kJ/mol</span></li>
+              <li><strong>Factor Pre-exponencial (A):</strong> <span style="color:var(--text-main); font-weight:600">2.25 × 10¹¹ min⁻¹</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 6: CALCULADORA ==================== -->
+    <div id="calculadora" class="tab-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>🧮 Calculadora Ley de Biot</span>
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label>Variable a Calcular:</label>
+            <select id="calcTarget" onchange="toggleCalcFields()">
+              <option value="alpha">Rotación Observada (α)</option>
+              <option value="conc">Concentración (c)</option>
+              <option value="specRot">Rotación Específica ([α])</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0.8rem;">
+            <label id="lbl1">Rotación Específica [α] (°):</label>
+            <input type="number" id="calcVal1" value="66.53">
+          </div>
+          <div class="form-group" style="margin-bottom:0.8rem;">
+            <label id="lbl2">Concentración c (g / 100 mL):</label>
+            <input type="number" id="calcVal2" value="10.0">
+          </div>
+          <div class="form-group" style="margin-bottom:0.8rem;">
+            <label id="lbl3">Longitud de celda l (dm):</label>
+            <input type="number" id="calcVal3" value="2.0">
+          </div>
+
+          <button class="btn" onclick="executeBiotCalc()" style="width:100%; margin-top:1rem;">Calcular Resultado</button>
+
+          <div class="display-box" style="margin-top:1rem;">
+            <div class="stat-item" style="width:100%;">
+              <div class="stat-label">Resultado Calculado</div>
+              <div class="stat-value" id="biotCalcResult">+13.31°</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title emerald">
+            <span>🍬 Calculadora Método Clerget (% Sacarosa en Alimentos)</span>
+          </div>
+          <div class="form-group" style="margin-bottom:0.8rem;">
+            <label>Lectura Polarimétrica Directa P (°):</label>
+            <input type="number" id="clergetP" value="18.25" step="0.05">
+          </div>
+          <div class="form-group" style="margin-bottom:0.8rem;">
+            <label>Lectura Polarimétrica Invertida I (°):</label>
+            <input type="number" id="clergetI" value="-5.40" step="0.05">
+          </div>
+          <div class="form-group" style="margin-bottom:0.8rem;">
+            <label>Temperatura de Lectura T (°C):</label>
+            <input type="number" id="clergetT" value="20.0" step="0.5">
+          </div>
+
+          <button class="btn btn-success" onclick="executeClergetCalc()" style="width:100%; margin-top:1rem;">Calcular % Sacarosa</button>
+
+          <div class="display-box" style="margin-top:1rem;">
+            <div class="stat-item" style="width:100%;">
+              <div class="stat-label">% Sacarosa en Muestra</div>
+              <div class="stat-value" style="color:var(--accent-emerald)" id="clergetResult">17.65 %</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 7: EVALUACION ==================== -->
+    <div id="evaluacion" class="tab-content">
+      <div class="card">
+        <div class="card-title purple">
+          <span>📝 Caso de Estudio Integrado y Cuestionario</span>
+        </div>
+
+        <div style="margin-bottom:2rem; background:rgba(15,23,42,0.5); padding:1.2rem; border-radius:10px; border-left:4px solid var(--accent-cyan);">
+          <h4 style="color:var(--accent-cyan); margin-bottom:0.5rem;">Escenario Real de Laboratorio</h4>
+          <p style="font-size:0.95rem; color:var(--text-main);">
+            Un laboratorio de control de calidad recibe una muestra de <strong>Miel de Abeja Comercial</strong> sospechosa de adulteración con jarabe de maíz con alto contenido de glucosa. Adicionalmente, el departamento de Ciencias Ambientales requiere evaluar la tasa de degradación ácida de la sacarosa en vertederos agroindustriales a 35°C.
+          </p>
+        </div>
+
+        <!-- Pregunta 1 -->
+        <div style="margin-bottom:1.5rem;">
+          <h4 style="color:var(--text-main); margin-bottom:0.8rem;">1. ¿Cuál es el comportamiento polarimétrico esperado para una Miel Pura de Abeja versus una Miel Adulterada con jarabe de dextrosa?</h4>
+          <div class="quiz-option" onclick="checkQuiz(this, true, '¡Correcto! La miel pura es levorrotatoria (-) debido a que contiene más fructosa ([α] = -92.4°) que glucosa. El jarabe de glucosa es dextrorrotatorio (+), haciendo que la miel adulterada invierta o reduzca su levorrotación.')">
+            A) La miel pura es levorrotatoria (-) por exceso de fructosa; la adulterada se vuelve dextrorrotatoria (+).
+          </div>
+          <div class="quiz-option" onclick="checkQuiz(this, false, 'Incorrecto. La fructosa es fuertemente levorrotatoria (-92.4°), no dextrorrotatoria.')">
+            B) La miel pura es dextrorrotatoria (+) por el alto contenido de fructosa.
+          </div>
+          <div class="quiz-option" onclick="checkQuiz(this, false, 'Incorrecto. La polarimetría es la técnica oficial por excelencia para detectar adulteración por jarabes de maíz.')">
+            C) Ambas presentan la misma rotación óptica, por lo que la polarimetría no sirve.
+          </div>
+          <div id="q1-feedback" style="font-size:0.9rem; margin-top:0.4rem;"></div>
+        </div>
+
+        <!-- Pregunta 2 -->
+        <div style="margin-bottom:1.5rem;">
+          <h4 style="color:var(--text-main); margin-bottom:0.8rem;">2. En la determinación polarimétrica de lactosa en leche, ¿por qué es obligatorio utilizar el reactivo de Carrez (Ferrocianuro K + Acetato Zn)?</h4>
+          <div class="quiz-option" onclick="checkQuiz(this, false, 'Incorrecto. Carrez no reacciona con la lactosa; limpia la muestra.')">
+            A) Para hacer reaccionar la lactosa y aumentar su rotación específica.
+          </div>
+          <div class="quiz-option" onclick="checkQuiz(this, true, '¡Correcto! Las proteínas (caseínas) y glóbulos de grasa provocan dispersión de la luz (turbidez), impidiendo el paso del haz polarizado. Carrez precipita interfirientes sin afectar a la lactosa solube.')">
+            B) Para precipitar proteínas y materia grasa que causan turbidez y dispersión de la luz.
+          </div>
+          <div class="quiz-option" onclick="checkQuiz(this, false, 'Incorrecto. El reactivo de Carrez elimina coloides, no altera la temperatura.')">
+            C) Para elevar la temperatura de la muestra a 20°C exactamente.
+          </div>
+          <div id="q2-feedback" style="font-size:0.9rem; margin-top:0.4rem;"></div>
+        </div>
+
+        <!-- Pregunta 3 -->
+        <div style="margin-bottom:1.5rem;">
+          <h4 style="color:var(--text-main); margin-bottom:0.8rem;">3. ¿Por qué la reacción de hidrólisis de la sacarosa se conoce como "Inversión"?</h4>
+          <div class="quiz-option" onclick="checkQuiz(this, true, '¡Correcto! Inicialmente la solución es dextrorrotatoria (+) debido a la sacarosa. Al final, el poder rotatorio de la fructosa (-92.4°) supera al de la glucosa (+52.7°), invirtiendo el signo de la rotación a negativo (-).')">
+            A) Porque el signo de la rotación óptica cambia de positivo (+) a negativo (-) durante la reacción.
+          </div>
+          <div class="quiz-option" onclick="checkQuiz(this, false, 'Incorrecto. No tiene relación con el sentido de circulación de los tubos.')">
+            B) Porque hay que invertir el tubo de muestra horizontalmente en la celda.
+          </div>
+          <div class="quiz-option" onclick="checkQuiz(this, false, 'Incorrecto. La constante de equilibrio no se invierte.')">
+            C) Porque la constante de velocidad k se vuelve negativa al pasar el tiempo.
+          </div>
+          <div id="q3-feedback" style="font-size:0.9rem; margin-top:0.4rem;"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // DATA STORE
+    const sampleDB = {
+      sucrose: { specRot: 66.53, tempCoeff: 0.0122, name: "Sacarosa" },
+      glucose: { specRot: 52.70, tempCoeff: 0.0000, name: "D-Glucosa" },
+      fructose: { specRot: -92.40, tempCoeff: 0.0000, name: "D-Fructosa" },
+      lactose: { specRot: 52.60, tempCoeff: 0.0000, name: "Lactosa" },
+      invert_sugar: { specRot: -19.85, tempCoeff: 0.0000, name: "Azúcar Invertido" },
+      limonene_pure: { specRot: 123.60, tempCoeff: 0.0000, name: "D-Limoneno" },
+      menthol: { specRot: -50.00, tempCoeff: 0.0000, name: "L-Mentol" },
+      glutamic_acid: { specRot: 31.40, tempCoeff: 0.0000, name: "Ácido L-Glutámico" },
+      camphor: { specRot: 44.20, tempCoeff: 0.0000, name: "D-Alcanfor" }
+    };
+
+    let currentAlphaTeorico = 0;
+    let analyzerAngle = 0;
+
+    // DATASETS FOR TABLES
+    const rawDataSets = {
+      calibracion: {
+        title: "Curva de Calibración de Sacarosa Estándar (T = 20.0 °C, l = 2.0 dm)",
+        headers: ["Muestra", "Concentración (g/100mL)", "Longitud (dm)", "Temp (°C)", "Rotación Obs α (°)", "Rot. Específica Calc [α] (°)"],
+        rows: [
+          ["Estándar 1", "0.0", "2.0", "20.0", "0.00", "0.00"],
+          ["Estándar 2", "2.5", "2.0", "20.0", "+3.35", "+67.00"],
+          ["Estándar 3", "5.0", "2.0", "20.0", "+6.64", "+66.40"],
+          ["Estándar 4", "7.5", "2.0", "20.0", "+10.01", "+66.73"],
+          ["Estándar 5", "10.0", "2.0", "20.0", "+13.29", "+66.45"],
+          ["Estándar 6", "12.5", "2.0", "20.0", "+16.64", "+66.56"],
+          ["Estándar 7", "15.0", "2.0", "20.0", "+20.00", "+66.67"],
+          ["Estándar 8", "20.0", "2.0", "20.0", "+26.63", "+66.58"],
+          ["Estándar 9", "25.0", "2.0", "20.0", "+33.26", "+66.52"]
+        ]
+      },
+      alimentos: {
+        title: "Muestras Agroalimentarias (Polarimetría Directa y Clerget)",
+        headers: ["ID Muestra", "Tipo Alimento", "Clarificación", "Tubo (dm)", "Directa P (°)", "Inversión I (°)", "°Brix", "% Sacarosa", "Evaluación"],
+        rows: [
+          ["M-01", "Jugo de Caña de Azúcar", "Subacetato Plomo", "2.0", "+18.25", "-5.40", "18.5", "17.65", "Cumple Norma de Pureza"],
+          ["M-02", "Jugo de Naranja Comercial", "Carrez I y II", "2.0", "+9.45", "-2.80", "10.8", "9.14", "Azúcares Libres Estándar"],
+          ["M-03", "Miel de Abeja Pura", "Disolución 26g/100mL", "2.0", "-3.50", "-15.20", "81.5", "8.73", "Predominio Levorrotatorio Normal"],
+          ["M-04", "Miel Adulterada (Maíz)", "Disolución 26g/100mL", "2.0", "+8.20", "+2.10", "79.0", "4.55", "⚠️ ADULTERADA (Dextrorrotatoria)"],
+          ["M-05", "Leche Entera", "Carrez I y II", "2.0", "+4.95", "N/A", "9.2", "4.70 (Lactosa)", "Lactosa Normal"],
+          ["M-06", "Leche Deslactosada", "Carrez I y II", "2.0", "+6.20", "N/A", "9.4", "<0.10 (Lactosa)", "Hidrolizada en Gluc+Galac"]
+        ]
+      },
+      cinetica: {
+        title: "Cinética de Inversión de Sacarosa α(t) (HCl 4M Catalítico)",
+        headers: ["Tiempo (min)", "α 25°C (°)", "ln(α - α∞) 25°C", "α 35°C (°)", "ln(α - α∞) 35°C", "α 45°C (°)", "ln(α - α∞) 45°C"],
+        rows: [
+          ["0", "+13.30", "2.8490", "+13.30", "2.8490", "+13.30", "2.8490"],
+          ["10", "+12.33", "2.7906", "+10.68", "2.6837", "+7.26", "2.4186"],
+          ["20", "+11.41", "2.7331", "+8.45", "2.5193", "+3.34", "1.9892"],
+          ["30", "+10.55", "2.6755", "+6.56", "2.3542", "+0.79", "1.5602"],
+          ["45", "+9.34", "2.5885", "+4.26", "2.1073", "-1.89", "0.7324"],
+          ["60", "+8.25", "2.5030", "+2.44", "1.8579", "-3.03", "-0.1508"],
+          ["90", "+6.30", "2.3292", "-0.10", "1.3532", "-3.75", "-1.5141"],
+          ["120", "+4.63", "2.1518", "-1.62", "0.8544", "-3.92", "-2.9957"],
+          ["180", "+2.12", "1.8066", "-3.09", "-0.1278", "-3.96", "N/A"],
+          ["Infinito (24h)", "-3.97", "N/A", "-3.97", "N/A", "-3.97", "N/A"]
+        ]
+      },
+      naturales: {
+        title: "Aceites Esenciales y Biomoléculas Chirales Ambientales",
+        headers: ["ID", "Biomolécula", "Origen Natural", "Solvente", "Tubo (dm)", "Conc (g/100mL)", "α Obs (°)", "[α] Exp (°)", "[α] Lit (°)", "Pureza / ee%"],
+        rows: [
+          ["CN-01", "D-Limoneno", "Cáscara Naranja Dulce", "Etanol Absoluto", "1.0", "10.0", "+12.24", "+122.4", "+123.6", "99.0% D-isómero"],
+          ["CN-02", "D-Limoneno Sintético", "Subproducto Industrial", "Etanol Absoluto", "1.0", "10.0", "+8.50", "+85.0", "+123.6", "68.8% ee (Racemizado)"],
+          ["CN-03", "L-Mentol", "Aceite Menta Piperita", "Etanol 95%", "1.0", "10.0", "-4.92", "-49.2", "-50.0", "98.4% Pureza"],
+          ["CN-04", "Ácido L-Glutámico", "Fermentación Bacteriana", "HCl 6M", "1.0", "5.0", "+1.56", "+31.2", "+31.4", "99.4% L-isómero"]
+        ]
+      }
+    };
+
+    let activeDataSetKey = 'calibracion';
+
+    // TAB NAVIGATION
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      event.currentTarget.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+
+      if (tabId === 'graficos') {
+        renderCharts();
+      }
+    }
+
+    // SIMULATION ENGINE
+    function updateSimulation() {
+      const sampleKey = document.getElementById('sampleSelect').value;
+      const c = parseFloat(document.getElementById('concInput').value) || 0;
+      const l = parseFloat(document.getElementById('lengthSelect').value) || 1.0;
+      const T = parseFloat(document.getElementById('tempInput').value) || 20.0;
+
+      const sample = sampleDB[sampleKey];
+      
+      // Calculate Spec Rot with Temp Correction
+      let specRotTemp = sample.specRot - sample.tempCoeff * (T - 20.0);
+      
+      // Biot Law: alpha = [alpha] * c * l / 100
+      currentAlphaTeorico = (specRotTemp * c * l) / 100.0;
+
+      document.getElementById('alphaTeoricoDisplay').innerText = (currentAlphaTeorico >= 0 ? '+' : '') + currentAlphaTeorico.toFixed(2) + '°';
+      document.getElementById('specRotDisplay').innerText = (specRotTemp >= 0 ? '+' : '') + specRotTemp.toFixed(2) + '°';
+
+      drawOpticalBench(currentAlphaTeorico);
+      updateLaurentView();
+    }
+
+    function onDialChange() {
+      analyzerAngle = parseFloat(document.getElementById('analyzerDial').value);
+      document.getElementById('dialVal').innerText = (analyzerAngle >= 0 ? '+' : '') + analyzerAngle.toFixed(2) + '°';
+      updateLaurentView();
+    }
+
+    function stepDial(delta) {
+      analyzerAngle += delta;
+      if (analyzerAngle > 180) analyzerAngle -= 360;
+      if (analyzerAngle < -180) analyzerAngle += 360;
+      document.getElementById('analyzerDial').value = analyzerAngle.toFixed(2);
+      onDialChange();
+    }
+
+    function autoAlignDial() {
+      analyzerAngle = currentAlphaTeorico;
+      document.getElementById('analyzerDial').value = analyzerAngle.toFixed(2);
+      onDialChange();
+    }
+
+    function updateLaurentView() {
+      // Laurent half-shade physics simulation:
+      // Half left is rotated by alpha - angle
+      // Half right is rotated with half-wave plate bias (e.g. 4 degrees shift)
+      const diffLeft = Math.abs(currentAlphaTeorico - analyzerAngle);
+      const biasHalfShade = 4.0; // degrees
+      const diffRight = Math.abs((currentAlphaTeorico + biasHalfShade) - analyzerAngle);
+
+      // Malus intensity: I = I0 * cos^2(delta)
+      const radL = (diffLeft * Math.PI) / 180.0;
+      const radR = (diffRight * Math.PI) / 180.0;
+
+      let intL = Math.pow(Math.cos(radL), 2);
+      let intR = Math.pow(Math.cos(radR), 2);
+
+      // Map to RGB brightness
+      const bgL = Math.floor(intL * 220 + 15);
+      const bgR = Math.floor(intR * 220 + 15);
+
+      document.getElementById('halfLeft').style.backgroundColor = `rgb(${bgL}, ${bgL * 0.9}, ${bgL * 0.4})`;
+      document.getElementById('halfRight').style.backgroundColor = `rgb(${bgR}, ${bgR * 0.9}, ${bgR * 0.4})`;
+
+      // Alignment check
+      const statusEl = document.getElementById('alignmentStatus');
+      const err = Math.abs(diffLeft);
+      if (err < 0.08) {
+        statusEl.innerText = "🎯 ¡Coincidencia Exacta!";
+        statusEl.style.color = "var(--accent-emerald)";
+      } else if (err < 0.5) {
+        statusEl.innerText = "🔍 Casi Alineado";
+        statusEl.style.color = "var(--accent-amber)";
+      } else {
+        statusEl.innerText = "❌ Desalineado";
+        statusEl.style.color = "var(--text-muted)";
+      }
+    }
+
+    function drawOpticalBench(rotAngle) {
+      const canvas = document.getElementById('benchCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      
+      // Handle high DPI
+      canvas.width = canvas.clientWidth * window.devicePixelRatio || 600;
+      canvas.height = canvas.clientHeight * window.devicePixelRatio || 240;
+
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Light source
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(40, h/2, 20, 0, Math.PI*2);
+      ctx.fill();
+      ctx.shadowColor = '#fbbf24';
+      ctx.shadowBlur = 15;
+
+      // Polarizer Filter
+      ctx.fillStyle = '#38bdf8';
+      ctx.shadowBlur = 0;
+      ctx.fillRect(140, h/2 - 50, 12, 100);
+
+      // Sample Cell
+      ctx.fillStyle = 'rgba(52, 211, 153, 0.2)';
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 2;
+      ctx.fillRect(220, h/2 - 35, 180, 70);
+      ctx.strokeRect(220, h/2 - 35, 180, 70);
+
+      // Analyzer Filter
+      ctx.fillStyle = '#c084fc';
+      ctx.fillRect(470, h/2 - 50, 12, 100);
+
+      // Light Beam line
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(60, h/2);
+      ctx.lineTo(w - 40, h/2);
+      ctx.stroke();
+
+      // Labels
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '14px Inter';
+      ctx.fillText("Fuente Na (589nm)", 15, h/2 + 45);
+      ctx.fillText("Polarizador Fijo", 110, h/2 + 70);
+      ctx.fillText("Tubo de Muestra (Quiral)", 230, h/2 + 60);
+      ctx.fillText("Analizador Dial", 440, h/2 + 70);
+    }
+
+    // DATA TABLE RENDERER
+    function showDataSet(key) {
+      activeDataSetKey = key;
+      const ds = rawDataSets[key];
+      const container = document.getElementById('tableContainer');
+
+      let html = `<h4 style="color:var(--accent-cyan); margin:0.5rem 1rem;">${ds.title}</h4>`;
+      html += `<table><thead><tr>`;
+      ds.headers.forEach(h => html += `<th>${h}</th>`);
+      html += `</tr></thead><tbody>`;
+      ds.rows.forEach(r => {
+        html += `<tr>`;
+        r.forEach(cell => html += `<td>${cell}</td>`);
+        html += `</tr>`;
+      });
+      html += `</tbody></table>`;
+
+      container.innerHTML = html;
+    }
+
+    function exportActiveTableCSV(spanishFormat) {
+      const ds = rawDataSets[activeDataSetKey];
+      const sep = spanishFormat ? ';' : ',';
+      let csvContent = "data:text/csv;charset=utf-8,";
+      
+      csvContent += ds.headers.join(sep) + "\n";
+      ds.rows.forEach(r => {
+        let rowStr = r.map(c => spanishFormat ? c.replace('.', ',') : c).join(sep);
+        csvContent += rowStr + "\n";
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `${activeDataSetKey}_${spanishFormat ? 'excel_es' : 'standard'}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // CHARTS RENDERER
+    let chartInstance1 = null;
+    let chartInstance2 = null;
+    let chartInstance3 = null;
+
+    function renderCharts() {
+      // Chart 1: Calibration Curve
+      const ctx1 = document.getElementById('calibChart').getContext('2d');
+      if (chartInstance1) chartInstance1.destroy();
+      chartInstance1 = new Chart(ctx1, {
+        type: 'line',
+        data: {
+          labels: ['0.0', '2.5', '5.0', '7.5', '10.0', '12.5', '15.0', '20.0', '25.0'],
+          datasets: [{
+            label: 'Rotación Observada α (°)',
+            data: [0.00, 3.35, 6.64, 10.01, 13.29, 16.64, 20.00, 26.63, 33.26],
+            borderColor: '#38bdf8',
+            backgroundColor: 'rgba(56, 189, 248, 0.1)',
+            fill: true,
+            tension: 0.1,
+            pointRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#f8fafc' } } },
+          scales: {
+            x: { title: { display: true, text: 'Concentración Sacarosa (g/100mL)', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
+            y: { title: { display: true, text: 'Rotación α (°)', color: '#94a3b8' }, ticks: { color: '#94a3b8' } }
+          }
+        }
+      });
+
+      // Chart 2: Kinetics
+      const ctx2 = document.getElementById('kineticChart').getContext('2d');
+      if (chartInstance2) chartInstance2.destroy();
+      chartInstance2 = new Chart(ctx2, {
+        type: 'line',
+        data: {
+          labels: ['0', '10', '20', '30', '45', '60', '90', '120', '180'],
+          datasets: [
+            { label: 'T = 25 °C', data: [13.30, 12.33, 11.41, 10.55, 9.34, 8.25, 6.30, 4.63, 2.12], borderColor: '#38bdf8', tension: 0.3 },
+            { label: 'T = 35 °C', data: [13.30, 10.68, 8.45, 6.56, 4.26, 2.44, -0.10, -1.62, -3.09], borderColor: '#fbbf24', tension: 0.3 },
+            { label: 'T = 45 °C', data: [13.30, 7.26, 3.34, 0.79, -1.89, -3.03, -3.75, -3.92, -3.96], borderColor: '#fb7185', tension: 0.3 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#f8fafc' } } },
+          scales: {
+            x: { title: { display: true, text: 'Tiempo (min)', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
+            y: { title: { display: true, text: 'Rotación Observada α (°)', color: '#94a3b8' }, ticks: { color: '#94a3b8' } }
+          }
+        }
+      });
+
+      // Chart 3: Arrhenius
+      const ctx3 = document.getElementById('lnKineticChart').getContext('2d');
+      if (chartInstance3) chartInstance3.destroy();
+      chartInstance3 = new Chart(ctx3, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'ln(k) vs 1/T (Arrhenius)',
+            data: [
+              { x: 0.003354, y: -5.15 }, // 25 C = 298.15 K
+              { x: 0.003245, y: -4.10 }, // 35 C = 308.15 K
+              { x: 0.003143, y: -3.15 }  // 45 C = 318.15 K
+            ],
+            backgroundColor: '#fbbf24',
+            pointRadius: 7
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#f8fafc' } } },
+          scales: {
+            x: { title: { display: true, text: '1/T (K⁻¹)', color: '#94a3b8' }, ticks: { color: '#94a3b8' } },
+            y: { title: { display: true, text: 'ln(k)', color: '#94a3b8' }, ticks: { color: '#94a3b8' } }
+          }
+        }
+      });
+    }
+
+    // CALCULATORS
+    function toggleCalcFields() {
+      const target = document.getElementById('calcTarget').value;
+      if (target === 'alpha') {
+        document.getElementById('lbl1').innerText = "Rotación Específica [α] (°):";
+        document.getElementById('lbl2').innerText = "Concentración c (g / 100 mL):";
+        document.getElementById('lbl3').innerText = "Longitud de celda l (dm):";
+      } else if (target === 'conc') {
+        document.getElementById('lbl1').innerText = "Rotación Observada α (°):";
+        document.getElementById('lbl2').innerText = "Rotación Específica [α] (°):";
+        document.getElementById('lbl3').innerText = "Longitud de celda l (dm):";
+      }
+    }
+
+    function executeBiotCalc() {
+      const target = document.getElementById('calcTarget').value;
+      const v1 = parseFloat(document.getElementById('calcVal1').value) || 0;
+      const v2 = parseFloat(document.getElementById('calcVal2').value) || 0;
+      const v3 = parseFloat(document.getElementById('calcVal3').value) || 1;
+
+      let res = 0;
+      if (target === 'alpha') {
+        res = (v1 * v2 * v3) / 100.0;
+        document.getElementById('biotCalcResult').innerText = (res >= 0 ? '+' : '') + res.toFixed(2) + '°';
+      } else if (target === 'conc') {
+        res = (v1 * 100.0) / (v2 * v3);
+        document.getElementById('biotCalcResult').innerText = res.toFixed(2) + ' g/100mL';
+      }
+    }
+
+    function executeClergetCalc() {
+      const P = parseFloat(document.getElementById('clergetP').value) || 0;
+      const I = parseFloat(document.getElementById('clergetI').value) || 0;
+      const T = parseFloat(document.getElementById('clergetT').value) || 20;
+
+      const pct = (100.0 * (P - I)) / (142.66 - 0.5 * T);
+      document.getElementById('clergetResult').innerText = pct.toFixed(2) + ' %';
+    }
+
+    // QUIZ CHECKER
+    function checkQuiz(el, isCorrect, feedback) {
+      const parent = el.parentElement;
+      const feedbackDiv = parent.querySelector('div[id$="-feedback"]');
+      
+      parent.querySelectorAll('.quiz-option').forEach(opt => {
+        opt.classList.remove('correct', 'incorrect');
+      });
+
+      if (isCorrect) {
+        el.classList.add('correct');
+        feedbackDiv.style.color = "var(--accent-emerald)";
+      } else {
+        el.classList.add('incorrect');
+        feedbackDiv.style.color = "var(--accent-rose)";
+      }
+      feedbackDiv.innerText = feedback;
+    }
+
+    // INITIALIZATION
+    window.addEventListener('load', () => {
+      updateSimulation();
+      showDataSet('calibracion');
+    });
+    window.addEventListener('resize', () => {
+      drawOpticalBench(currentAlphaTeorico);
+    });
+  </script>
+</body>
+</html>
